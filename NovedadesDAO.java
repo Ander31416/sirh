@@ -45,4 +45,24 @@ public class NovedadesDAO {
         
         return true;
     }
+    
+    public boolean ConsultarNovedad(int idNovedades){
+        
+        String sql = "select * from Novedades where idNovedades = "+ idNovedades;
+        
+        //Conectarse a la base de datos
+        con = cn.getConnection();
+
+        try {
+            ps = con.prepareStatement(sql); //Envia la instruccion en comando sql
+            ps.executeUpdate(); //Ejecuta la instruccion
+        } catch (SQLException ex) {
+            //Muestra el error en caso de haberlo
+            Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
+            return false;
+        }
+        
+        return true;
+    }
 }
