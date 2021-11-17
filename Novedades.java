@@ -17,16 +17,18 @@ public class Novedades {
     private String tipoNovedad;
     private String descripcion;
     private Date fechaNovedad;
+    private String tipoDocument;
     private Empleado idEmpleado;
 
     public Novedades() {
     }
 
-    public Novedades(int idNovedades, String tipoNovedad, String descripcion, Date fechaNovedad, Empleado idEmpleado) {
+    public Novedades(int idNovedades, String tipoNovedad, String descripcion, Date fechaNovedad, String tipoDocument, Empleado idEmpleado) {
         this.idNovedades = idNovedades;
         this.tipoNovedad = tipoNovedad;
         this.descripcion = descripcion;
         this.fechaNovedad = fechaNovedad;
+        this.tipoDocument = tipoDocument;
         this.idEmpleado = idEmpleado;
     }
 
@@ -60,6 +62,13 @@ public class Novedades {
 
     public void setFechaNovedad(Date fechaNovedad) {
         this.fechaNovedad = fechaNovedad;
+    }
+    
+    public String settipoDocument(){
+    }
+    
+    public void gettipoDocument(){
+        this.tipoDocument = tipoDocument;
     }
 
     public Empleado getIdEmpleado() {
