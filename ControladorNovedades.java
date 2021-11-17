@@ -58,7 +58,7 @@ public class ControladorNovedades implements ActionListener {
             if(validarCamposCompletos(TipoNov,Cod,TipoDoc,nroDoc,descripción) != true){
                 JOptionPane.showMessageDialog(frmnovedades, "Todos los campos deben ser insertados");
             }else{
-                novedades = new Novedades(Cod, TipoNov, descripción, fecha, nroDoc);
+                novedades = new Novedades(Cod, TipoNov, descripción, fecha, tipoDoc, nroDoc);
                 
                 novedadesdao.GuardarNovedad(novedades);
                 LimpiarControles();
@@ -67,6 +67,9 @@ public class ControladorNovedades implements ActionListener {
         }
         
         if(e.getSource() == frmnovedades.jBtConsultar){
+            if(!frmnovedades.jTFCedula.getText().equals("")){
+                
+            }
         }
     }  
     
