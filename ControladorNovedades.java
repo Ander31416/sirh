@@ -42,11 +42,23 @@ public class ControladorNovedades implements ActionListener {
             String TipoDoc = frmnovedades.jCBIdentificación.getSelectedItem().toString();      
             int nroDoc = parseInt(frmnovedades.jTFCedula.getText());
             String descripción = frmnovedades.jTADescription.getText();
+            
+            //Capturar fecha
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = format.format(frmnovedades.jCFechaNovedad.getDate());
+            java.util.Date fechaN = null;
+            try {
+                fechaN = format.parse(fecha);
+            } catch (ParseException ex) {
+                Logger.getLogger(ControladorEmpleado.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            java.sql.Date fechasql = new java.sql.Date(fechaN.getTime());
+            
            
             if(validarCamposCompletos(TipoNov,Cod,TipoDoc,nroDoc,descripción) != true){
                 JOptionPane.showMessageDialog(frmnovedades, "Todos los campos deben ser insertados");
             }else{
-                novedades = new Novedades(Cod, TipoNov, descripción, Date fechaNovedad, nroDoc);
+                novedades = new Novedades(Cod, TipoNov, descripción, fecha, nroDoc);
                 
                 novedadesdao.GuardarNovedad(novedades);
                 LimpiarControles();
