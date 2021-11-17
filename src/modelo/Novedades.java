@@ -14,11 +14,22 @@ import java.sql.Date;
 public class Novedades {
 
     private int idNovedades;
+    private String tipoNovedad;
     private String descripcion;
     private Date fechaNovedad;
+    private String tipoDocument;
     private Empleado idEmpleado;
 
     public Novedades() {
+    }
+
+    public Novedades(int idNovedades, String tipoNovedad, String descripcion, Date fechaNovedad, String tipoDocument, Empleado idEmpleado) {
+        this.idNovedades = idNovedades;
+        this.tipoNovedad = tipoNovedad;
+        this.descripcion = descripcion;
+        this.fechaNovedad = fechaNovedad;
+        this.tipoDocument = tipoDocument;
+        this.idEmpleado = idEmpleado;
     }
 
     public int getIdNovedades() {
@@ -27,6 +38,14 @@ public class Novedades {
 
     public void setIdNovedades(int idNovedades) {
         this.idNovedades = idNovedades;
+    }
+
+    public String getTipoNovedad() {
+        return tipoNovedad;
+    }
+
+    public void setTipoNovedad(String tipoNovedad) {
+        this.tipoNovedad = tipoNovedad;
     }
 
     public String getDescripcion() {
@@ -43,6 +62,13 @@ public class Novedades {
 
     public void setFechaNovedad(Date fechaNovedad) {
         this.fechaNovedad = fechaNovedad;
+    }
+    
+    public String settipoDocument(){
+    }
+    
+    public void gettipoDocument(){
+        this.tipoDocument = tipoDocument;
     }
 
     public Empleado getIdEmpleado() {
