@@ -7,12 +7,22 @@ package controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import static java.lang.String.valueOf;
 import java.sql.SQLException;
+import java.util.Properties;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
 import modelo.Administrador;
 import modelo.AdministradorDAO;
+import modelo.Fabricante;
 import vista.FrmInicio;
 import vista.FrmPrincipal;
 
@@ -25,6 +35,7 @@ public class ControladorInicio implements ActionListener {
     FrmInicio frminicio;
     Administrador admin;
     AdministradorDAO admindao;
+    Fabricante fabric;
 
     public ControladorInicio(FrmInicio frminicio, Administrador admin, AdministradorDAO admindao) {
         this.frminicio = frminicio;
@@ -40,47 +51,90 @@ public class ControladorInicio implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+         
         if (e.getSource() == frminicio.jBtCambiarPw) {
-
-            int x = 0;
-            int respuesta = JOptionPane.showConfirmDialog(null, "¿Esta seguro de querer cambiar su contraseña?", "Fin productos", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            if (respuesta == JOptionPane.YES_OPTION) {
-
-                do {
-                    String newPassword = JOptionPane.showInputDialog("Porfavor ingrese la nueva contraseña");
-
-                    if (admindao.cambiarPassword(newPassword)) {
-                        //limpiarControles();
-                        JOptionPane.showMessageDialog(frminicio, "Contraseña actualizada con exito");
-                        x = 0;
-                    } else {
-                        JOptionPane.showMessageDialog(frminicio, "Error al cambiar la contraseña");
-                        x = 1;
-                    }
-                } while (x == 1);
-            }
-
-            if (e.getSource() == frminicio.jBtInicioSesion) {
-
-                String usuario = frminicio.jTxUser.getText();
-                String contrasena = frminicio.jPassword.getText();
-
-                try {
-                    if (admindao.validarUsuario(usuario, contrasena)) {
-                        FrmPrincipal fmenu = new FrmPrincipal();
-
-                        fmenu.setVisible(true);
-                    } else {
-                        JOptionPane.showMessageDialog(frminicio, "Usuario y/o Contraseña incorrecto(s)");
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(ControladorInicio.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
+            /*
+            Aqui se pretende hacer todo el proceso de recuperación de contraseña
+            enviando un código de seguridad al email del usuario.
+            */            
+            SendEmail();                  
         }
 
+        if (e.getSource() == frminicio.jBtInicioSesion) {
+
+            String usuario = frminicio.jTxUser.getText();
+            String contrasena = frminicio.jPassword.getText();
+
+            try {
+                if (admindao.validarUsuario(usuario, contrasena)) {
+                    FrmPrincipal fmenu = new FrmPrincipal();
+
+                    fmenu.setVisible(true);
+                } 
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(frminicio, "Usuario y/o Contraseña incorrecto(s)");
+                Logger.getLogger(ControladorInicio.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
+    
+    public void SendEmail(){
+        Properties propiedad = new Properties();
+        propiedad.setProperty("mail smtp host", "smtp gmail com");
+        propiedad.setProperty("mail.smtp.starttla.enable", "true");
+        propiedad.setProperty("mail smtp port", "587");
+        propiedad.setProperty("mail.smtp.auth", "true");
+        Session sesion = Session.getDefaultInstance(propiedad);
+        Random claseRandom = new Random();
+        int code = 1000 + claseRandom.nextInt(10000 - 1000);
+            
+            
+        String Email = admin.getEmail();
+        String Emailfabricante = fabric.getEmailfabricante();
+        String Passwordfabricante = fabric.getPasswordfabricante();
+        String asunto = "envio de código de verificación";
+        String mensaje = "Código de verificación:\n\n" + code;
+        MimeMessage mail = new MimeMessage(sesion);
+            
+        try {
+            mail.setFrom(new InternetAddress (Emailfabricante));
+            mail.addRecipient(Message.RecipientType.TO, new InternetAddress (Email));
+            mail.setSubject(asunto);
+            mail.setText(mensaje);
+                
+            Transport transporte = sesion.getTransport("smtp");
+            transporte.connect(Emailfabricante, Passwordfabricante);
+            transporte.sendMessage(mail, mail.getRecipients(Message.RecipientType.TO));
+            transporte.close();
+                
+        } catch (MessagingException ex) {
+            Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String encryptionEmail = "", x = "";
+        for(int i = 0; i<Email.length(); i++){
+            if(i>1 && !(encryptionEmail.charAt(i) == '@' && x.equals(""))){
+                encryptionEmail += "*";
+            }else{
+                if(i<=1){
+                    encryptionEmail += Email.charAt(i);
+                }else{
+                    encryptionEmail += Email.charAt(i);
+                    x = " ";
+                }
+            }
+        }
+        int a = 0;
+        do{
+            String Inputcode = JOptionPane.showInputDialog(null, "Se ha enviado un código de verificación a "
+                + encryptionEmail + "\n\nDigite el código:");
+                
+            if(Inputcode.equals(valueOf(code))){
+                admindao.cambiarPassword();
+                a++;
+            }else{
+                JOptionPane.showMessageDialog(null, "ERROR. Codigo ingresado sin exito");
+            }
+        }while(a == 0);        
     }
 }
