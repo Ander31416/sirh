@@ -1,0 +1,191 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package controlador;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import static java.lang.Integer.parseInt;
+import java.io.*;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import modelo.Empleado;
+import modelo.Novedades;
+import modelo.NovedadesDAO;
+import vista.FrmNovedades;
+
+/**
+ *
+ * @author 57322
+ */
+public class ControladorNovedades implements ActionListener {
+    
+    FrmNovedades frmnovedades;
+    Novedades novedades;
+    NovedadesDAO novedadesdao;
+
+    public ControladorNovedades() {
+    } 
+
+    public ControladorNovedades(FrmNovedades frmnovedades, Novedades novedades, NovedadesDAO novedadesdao) {
+        this.frmnovedades = frmnovedades;
+        this.novedades = novedades;
+        this.novedadesdao = novedadesdao;
+    }
+
+    int y = 0;
+    private FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos pdf y jpg","pdf","jpg"); 
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {          
+        if(e.getSource() == frmnovedades.jBtGuardar){
+                    
+            String TipoNov = frmnovedades.jCtipoNovedad.getSelectedItem().toString();
+            int Cod = parseInt(frmnovedades.jTFCodigo.getText());
+            String tipoDoc = frmnovedades.jCBIdentificación.getSelectedItem().toString();      
+            int nroDoc = parseInt(frmnovedades.jTFCedula.getText());
+            String descripción = frmnovedades.jTADescription.getText();
+            
+            //Capturar fecha
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = format.format(frmnovedades.jDCFechaNov.getDate());
+            java.util.Date fechaN = null;
+            try {
+                fechaN = format.parse(fecha);
+            } catch (ParseException ex) {
+                Logger.getLogger(ControladorEmpleado.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            java.sql.Date fechasql = new java.sql.Date(fechaN.getTime());            
+           
+            if(ValidarControlesCompletos() && Cod == 0){
+                JOptionPane.showMessageDialog(frmnovedades, "Todos los campos deben ser insertados");
+            }else{
+                novedades = new Novedades(Cod, tipoDoc, TipoNov, descripción, fechasql, nroDoc);
+                
+                try {
+                    novedadesdao.GuardarNovedad(novedades);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                LimpiarControles();
+                JOptionPane.showMessageDialog(frmnovedades, "Novedad guardada con exito");
+            }
+        }
+        
+        if(e.getSource() == frmnovedades.jBtConsultar){           
+            int Cod = Integer.parseInt(frmnovedades.jTFCodigo.getText());
+            
+            if(frmnovedades.jTFCodigo.getText().equals("")){                
+                try {            
+                    novedadesdao.ConsultarNovedad(Cod);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        if(e.getSource() == frmnovedades.jBtEditar){            
+            int Cod = parseInt(frmnovedades.jTFCodigo.getText());
+            
+            if(frmnovedades.jTFCodigo.getText().equals("")){
+                JOptionPane.showMessageDialog(frmnovedades, "No se ha digitado el código de la novedad que se "
+                        + "desea editar");
+            }else if(!ValidarControlesLimpios()){
+                JOptionPane.showMessageDialog(frmnovedades, "No se ha editado ningun dato en la novedad "
+                        + Cod);
+            }else{
+                int x = JOptionPane.showConfirmDialog(frmnovedades, "¿Estas seguro de querer editar esto campos?", "Select an Option...",
+			JOptionPane.YES_NO_OPTION); 
+                
+                if(x == 0){
+                    try {
+                        novedadesdao.EditarNovedad(Cod);
+                        JOptionPane.showMessageDialog(frmnovedades, "La novedad se ha editado de"
+                                + " forma correcta");
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }           
+        }
+        
+        if(e.getSource() == frmnovedades.jBtEliminar){
+            if(frmnovedades.jTFCodigo.getText().equals("")){
+                JOptionPane.showMessageDialog(frmnovedades, "No se ha digitado el codigo de la novedad a eliminar");
+            }else{
+                int x = JOptionPane.showConfirmDialog(frmnovedades, "¿Estas seguro de querer eliminar esta novedad?", "Select an Option...",
+				JOptionPane.YES_NO_OPTION);
+                if(x == 0){                   
+                    int cod = parseInt(frmnovedades.jTFCodigo.getText());
+                    
+                    try {
+                        novedadesdao.EliminarNovedad(cod);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    JOptionPane.showMessageDialog(frmnovedades, "La novedad "+frmnovedades.jTFCodigo.getText().equals("")
+                            + " ha sido eliminada");
+                }
+            }
+        }
+       
+        if(e.getSource() == frmnovedades.jBtAñadirArchivos){           
+            JFileChooser file = new JFileChooser();            
+            file.setFileFilter(filter);
+            
+            int option = file.showOpenDialog(frmnovedades);
+            if(option == JFileChooser.APPROVE_OPTION){  
+                frmnovedades.jLabel11.setText(file.getSelectedFile().toString());
+                
+                File Archivo = file.getSelectedFile();
+                Long longitud = Archivo.length();
+            }
+            y++;
+        }        
+    }  
+    
+    public boolean LimpiarControles(){
+        
+        frmnovedades.jCtipoNovedad.setSelectedItem("[seleccionar]");
+        frmnovedades.jTFCedula.setText(null);
+        frmnovedades.jCBIdentificación.setSelectedItem("[seleccionar]");      
+        frmnovedades.jTFCedula.setText(null);
+        frmnovedades.jTADescription.setText(null);
+                
+        return true;
+    }
+    
+    public boolean ValidarControlesCompletos(){
+        if( 
+           frmnovedades.jCtipoNovedad.getSelectedItem().equals("[seleccionar]") ||
+           frmnovedades.jCBIdentificación.getSelectedItem().equals("[seleccionar]") || 
+           frmnovedades.jTFCedula.getText().equals("") ||
+           frmnovedades.jTADescription.getText().equals("") ||
+           y == 0
+           ){
+            return false;
+        }
+        return true;
+    }  
+    
+    public boolean ValidarControlesLimpios(){
+        if( 
+           frmnovedades.jCtipoNovedad.getSelectedItem().equals("[seleccionar]") &&
+           frmnovedades.jCBIdentificación.getSelectedItem().equals("[seleccionar]") && 
+           frmnovedades.jTFCedula.getText().equals("") &&
+           frmnovedades.jTADescription.getText().equals("") &&
+           y == 0                
+           ){
+            return false;
+        }
+        return true;
+    }
+}
