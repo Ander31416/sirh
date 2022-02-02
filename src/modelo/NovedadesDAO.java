@@ -4,6 +4,7 @@
  */
 package modelo;
 
+import modelo.Novedades;
 import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.sql.Date;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.FileInputStream;
 import vista.FrmNovedades;
 
 /**
@@ -29,10 +31,15 @@ public class NovedadesDAO {
     Novedades novedad = new Novedades();
     FrmNovedades frmnovedades;
     
-    public boolean GuardarNovedad(Novedades novedad) throws SQLException{
-        String sql = "insert into novedades values ('"+ novedad.getIdNovedades() +"', '"
-                + novedad.getDescripcion() +"', '"+ novedad.getFechaNovedad()+"', '"
-                + novedad.getIdEmpleado() +"', '"+ novedad.getTipoNovedad() +")";
+    public boolean GuardarNovedad(Novedades novedad, FileInputStream flujo, long longitud) throws SQLException{
+        String sql = "insert into novedades values ('?', '?', '?', '?', '?','?')";
+        
+        ps.setInt(1, novedad.getIdNovedades());
+        ps.setString(2, novedad.getDescripcion());
+        ps.setDate(3, novedad.getFechaNovedad());
+        ps.setInt(4, novedad.getIdEmpleado());
+        ps.setString(5, novedad.getTipoNovedad());
+        ps.setBlob(6, flujo, longitud);
         
         //Conectarse a la base de datos
         con = cn.getConnection();
@@ -42,7 +49,7 @@ public class NovedadesDAO {
             ps.executeUpdate(); //Ejecuta la instruccion
         } catch (SQLException ex) {
             //Muestra el error en caso de haberlo
-            Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(NovedadesDAO.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex);
             return false;
         }
@@ -77,9 +84,9 @@ public class NovedadesDAO {
         String sql4 = "";
         String sql5 = "";
         
-        String TipoNov = frmnovedades.jCtipoNovedad.getSelectedItem().toString();
+        String TipoNov = frmnovedades.jCbTipoNovedad.getSelectedItem().toString();
         String Cod = frmnovedades.jTFCodigo.getText();
-        String tipoDoc = frmnovedades.jCBIdentificación.getSelectedItem().toString();      
+        String tipoDoc = frmnovedades.jCbIdentificacion.getSelectedItem().toString();      
         String nroDoc = frmnovedades.jTFCedula.getText();
         String descripción = frmnovedades.jTADescription.getText();
         
@@ -95,7 +102,7 @@ public class NovedadesDAO {
                 ps.executeUpdate(); //Ejecuta la instruccion
             } catch (SQLException ex) {
                 //Muestra el error en caso de haberlo
-                Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(NovedadesDAO.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println(ex);
                 return false;
             }        
@@ -113,7 +120,7 @@ public class NovedadesDAO {
                 ps.executeUpdate(); //Ejecuta la instruccion
             } catch (SQLException ex) {
                 //Muestra el error en caso de haberlo
-                Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(NovedadesDAO.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println(ex);
                 return false;
             }        
@@ -131,7 +138,7 @@ public class NovedadesDAO {
                 ps.executeUpdate(); //Ejecuta la instruccion
             } catch (SQLException ex) {
                 //Muestra el error en caso de haberlo
-                Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(NovedadesDAO.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println(ex);
                 return false;
             } 
@@ -147,7 +154,7 @@ public class NovedadesDAO {
                 ps.executeUpdate(); //Ejecuta la instruccion
             } catch (SQLException ex) {
                 //Muestra el error en caso de haberlo
-                Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(NovedadesDAO.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println(ex);
                 return false;
             } 
@@ -163,7 +170,7 @@ public class NovedadesDAO {
                 ps.executeUpdate(); //Ejecuta la instruccion
             } catch (SQLException ex) {
                 //Muestra el error en caso de haberlo
-                Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(NovedadesDAO.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println(ex);
                 return false;
             } 
@@ -184,7 +191,7 @@ public class NovedadesDAO {
             ps.executeUpdate(); //Ejecuta la instruccion
         } catch (SQLException ex) {
             //Muestra el error en caso de haberlo
-            Logger.getLogger(EmpleadoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(NovedadesDAO.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex);
             return false;
         }    
