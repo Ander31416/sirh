@@ -63,10 +63,10 @@ public class ControladorInicio implements ActionListener {
         if (e.getSource() == frminicio.jBtInicioSesion) {
 
             String usuario = frminicio.jTxUser.getText();
-            String contrasena = frminicio.jPassword.getText();
+            String contraseña = frminicio.jPassword.getText();
 
             try {
-                if (admindao.validarUsuario(usuario, contrasena)) {
+                if (admindao.validarUsuario(usuario, contraseña)) {                
                     FrmPrincipal fmenu = new FrmPrincipal();
 
                     fmenu.setVisible(true);
@@ -138,3 +138,4 @@ public class ControladorInicio implements ActionListener {
         }while(a == 0);        
     }
 }
+
