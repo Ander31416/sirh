@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import static java.lang.Integer.parseInt;
 import java.io.*;
+import static java.lang.String.valueOf;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -92,7 +93,7 @@ public class ControladorNovedades implements ActionListener {
                 novedades = new Novedades(Cod, tipoDoc, TipoNov, descripción, fechasql, nroDoc);                                               
                 
                 try {
-                    novedadesdao.GuardarNovedad(novedades,flujo,longitud);
+                    novedadesdao.GuardarNovedad(novedades);
                 } catch (SQLException ex) {
                     Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
                 }                
@@ -103,14 +104,16 @@ public class ControladorNovedades implements ActionListener {
         
         if(e.getSource() == frmnovedades.jBtConsultar){           
                        
-            if(!frmnovedades.jTFCodigo.getText().equals("")){                
-                try {     
-                    int Cod = Integer.parseInt(frmnovedades.jTFCodigo.getText());
-                    novedadesdao.ConsultarNovedad(Cod);
+            if(!frmnovedades.jTFCodigo.getText().equals("")){ 
+                int Cod = Integer.parseInt(frmnovedades.jTFCodigo.getText());
+                try {
+                    if(VerificarCodigo(novedadesdao.ConsultarNovedad(Cod))){
+                        ConsultarNovedad(novedadesdao.ConsultarNovedad(Cod));
+                    }else{
+                        JOptionPane.showMessageDialog(frmnovedades, "Este código de novedad"
+                               + " no se encuentra registrado");
+                    }                    
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(frmnovedades, "El código ingresado no se encuentra"
-                            + " en la base de datos");
-                    
                     Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);                   
                 }
             }else{
@@ -132,9 +135,9 @@ public class ControladorNovedades implements ActionListener {
 			JOptionPane.YES_NO_OPTION); 
                 
                 if(x == 0){
-                    try {
-                        int Cod = parseInt(frmnovedades.jTFCodigo.getText());
-                        novedadesdao.EditarNovedad(Cod);
+                    try { 
+                        int idNovedades = parseInt(frmnovedades.jTFCodigo.getText());
+                        novedadesdao.EditarNovedad(idNovedades);
                         JOptionPane.showMessageDialog(frmnovedades, "La novedad se ha editado de"
                                 + " forma correcta");
                     } catch (SQLException ex) {
@@ -158,7 +161,7 @@ public class ControladorNovedades implements ActionListener {
                     } catch (SQLException ex) {
                         Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    JOptionPane.showMessageDialog(frmnovedades, "La novedad "+frmnovedades.jTFCodigo.getText().equals("")
+                    JOptionPane.showMessageDialog(frmnovedades, "La novedad "+frmnovedades.jTFCodigo.getText()
                             + " ha sido eliminada");
                 }
             }
@@ -189,7 +192,7 @@ public class ControladorNovedades implements ActionListener {
         frmnovedades.jCbTipoNovedad.setSelectedItem("[Seleccionar]");
         frmnovedades.jTFCedula.setText(null);
         frmnovedades.jCbIdentificacion.setSelectedItem("[Seleccionar]");      
-        frmnovedades.jTFCedula.setText(null);
+        frmnovedades.jTFCodigo.setText(null);
         frmnovedades.jTADescription.setText(null);
                 
         return true;
@@ -218,5 +221,17 @@ public class ControladorNovedades implements ActionListener {
             return true;
         }
         return false;
+    }
+    
+    public void ConsultarNovedad(Novedades novedad){
+        frmnovedades.jCbTipoNovedad.setSelectedItem(novedad.getTipoNovedad());
+        frmnovedades.jTFCedula.setText(valueOf(novedad.getIdEmpleado()));
+        frmnovedades.jCbIdentificacion.setSelectedItem(novedad.getTipoid());      
+        frmnovedades.jTFCodigo.setText(valueOf(novedad.getIdNovedades()));
+        frmnovedades.jTADescription.setText(novedad.getDescripcion());       
+    }
+    
+    public boolean VerificarCodigo(Novedades novedad) throws SQLException{
+        return novedad.getIdNovedades() != 0;       
     }
 }
