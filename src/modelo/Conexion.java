@@ -17,7 +17,7 @@ public class Conexion {
     Connection con;
     //Atributos o variables de la clase, declaradas e inicializadas.
     public String bd = "sirh";
-    public String login = "root";
+    public String login = "Ander";
     public String password = "";
     public String url = "jdbc:mysql://localhost/" + bd;
 
