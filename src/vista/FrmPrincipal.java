@@ -5,6 +5,13 @@
  */
 package vista;
 
+import controlador.ControladorCambiarPassword;
+import controlador.ControladorNovedades;
+import modelo.Administrador;
+import modelo.AdministradorDAO;
+import modelo.Novedades;
+import modelo.NovedadesDAO;
+
 /**
  *
  * @author SALA404-406
@@ -38,6 +45,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -61,6 +69,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jMenu2.add(jMenuItem1);
 
         jMenuItem2.setText("Novedades");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem2);
 
         jMenuItem3.setText("Nomina");
@@ -80,6 +93,15 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jMenuBar1.add(jMenu3);
 
         jMenu4.setText("Perfil");
+
+        jMenuItem5.setText("Cambiar Contraseña");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem5);
+
         jMenuBar1.add(jMenu4);
 
         jMenu5.setText("Salir");
@@ -106,6 +128,26 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jDesktopPane1.add(frmEmpleados); //Crea un objeto de tipo form y sobrepone un panel sobre otro
         frmEmpleados.show();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        NovedadesDAO admindao = new NovedadesDAO();
+        Novedades admin = new Novedades();
+            
+        FrmNovedades form1 = new FrmNovedades();
+        
+        ControladorNovedades control1 = new ControladorNovedades(form1, admin, admindao);
+        form1.setVisible(true); 
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        Administrador admin = new Administrador();
+        AdministradorDAO admindao = new AdministradorDAO();
+            
+        FrmCambiarPassword form1 = new FrmCambiarPassword();
+        
+        ControladorCambiarPassword control1 = new ControladorCambiarPassword(form1, admin, admindao);
+        form1.setVisible(true);   
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -153,5 +195,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     // End of variables declaration//GEN-END:variables
 }
