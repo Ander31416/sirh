@@ -13,16 +13,9 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
 import modelo.Administrador;
 import modelo.AdministradorDAO;
-//import modelo.Fabricante;
 import vista.FrmCrearCuenta;
 import vista.FrmInicio;
 import vista.FrmPrincipal;
@@ -36,7 +29,6 @@ public class ControladorInicio implements ActionListener {
     FrmInicio frminicio;
     Administrador admin;
     AdministradorDAO admindao;
-    //Fabricante fabric;
 
     public ControladorInicio(FrmInicio frminicio, Administrador admin, AdministradorDAO admindao) {
         this.frminicio = frminicio;
