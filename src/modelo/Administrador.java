@@ -12,9 +12,16 @@ package modelo;
 public class Administrador {
 
     private String user;
+    private String email;
     private String password;
 
     public Administrador() {
+    }
+
+    public Administrador(String user, String email, String password) {
+        this.user = user;
+        this.email = email;
+        this.password = password;
     }
 
     public String getUser() {
@@ -25,6 +32,14 @@ public class Administrador {
         this.user = user;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
     public String getPassword() {
         return password;
     }
