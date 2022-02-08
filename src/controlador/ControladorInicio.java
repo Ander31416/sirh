@@ -22,7 +22,8 @@ import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
 import modelo.Administrador;
 import modelo.AdministradorDAO;
-import modelo.Fabricante;
+//import modelo.Fabricante;
+import vista.FrmCrearCuenta;
 import vista.FrmInicio;
 import vista.FrmPrincipal;
 
@@ -35,7 +36,7 @@ public class ControladorInicio implements ActionListener {
     FrmInicio frminicio;
     Administrador admin;
     AdministradorDAO admindao;
-    Fabricante fabric;
+    //Fabricante fabric;
 
     public ControladorInicio(FrmInicio frminicio, Administrador admin, AdministradorDAO admindao) {
         this.frminicio = frminicio;
@@ -53,11 +54,13 @@ public class ControladorInicio implements ActionListener {
     public void actionPerformed(ActionEvent e) {
          
         if (e.getSource() == frminicio.jBtCambiarPw) {
-            /*
-            Aqui se pretende hacer todo el proceso de recuperación de contraseña
-            enviando un código de seguridad al email del usuario.
-            */            
-            SendEmail();                  
+            Administrador admin = new Administrador();
+            AdministradorDAO admindao = new AdministradorDAO();
+            
+            FrmCrearCuenta form1 = new FrmCrearCuenta();
+        
+            ControladorCrearCuenta control1 = new ControladorCrearCuenta(form1, admin, admindao);
+            form1.setVisible(true);                 
         }
 
         if (e.getSource() == frminicio.jBtInicioSesion) {
@@ -76,9 +79,10 @@ public class ControladorInicio implements ActionListener {
                 Logger.getLogger(ControladorInicio.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
     }
+
     
+    /*
     public void SendEmail(){
         Properties propiedad = new Properties();
         propiedad.setProperty("mail smtp host", "smtp gmail com");
@@ -136,6 +140,5 @@ public class ControladorInicio implements ActionListener {
                 JOptionPane.showMessageDialog(null, "ERROR. Codigo ingresado sin exito");
             }
         }while(a == 0);        
-    }
+    }*/
 }
-
