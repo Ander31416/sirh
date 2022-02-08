@@ -38,38 +38,9 @@ public class AdministradorDAO {
 
     Administrador admin = new Administrador();
 
-    public boolean cambiarPassword() {
-        
-        String newPassword;
-        
-        do{
-            newPassword = JOptionPane.showInputDialog("Ingrese una nueva contraseña");            
-            if(newPassword.equals("")){
-                JOptionPane.showMessageDialog(null, "Porfavor, digite el campo de contraseña");
-            }            
-        }while(newPassword.equals(""));
-        
-        String sql = "UPDATE administrador SET password='" + newPassword + "' WHERE password='" + admin.getPassword() + "'";
-
-        //Conectarse a la base de datos
-        con = cn.getConnection();
-
-        try {
-            ps = con.prepareStatement(sql); //Envia la instruccion en comando sql
-            ps.executeUpdate(); //Ejecuta la instruccion
-        } catch (SQLException ex) {
-            //Muestra el error en caso de haberlo
-            Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println(ex);
-            return false;
-        }
-
-        return true;
-    }
-
     public boolean validarUsuario(String usuario, String contrasena) throws SQLException {
 
-        String sql = "SELECT *FROM administrador";
+        String sql = "SELECT *FROM `administrador`";
 
         con = cn.getConnection();
 
@@ -77,7 +48,18 @@ public class AdministradorDAO {
         rs = ps.executeQuery(); //Se ejecuta
 
         while (rs.next()) {
-            if (rs.getString("user").trim().equals(usuario) && rs.getString("password").trim().equals(contrasena)) {
+            if (rs.getString("user").trim().equals(usuario) && rs.getString("id").trim().equals(contrasena)) {                
+                sql = "UPDATE `administrador` SET `Activate` = 'open' WHERE `id` = '"+ rs.getString("id") +"'";
+        
+                con = cn.getConnection();
+
+                try {
+                    ps = con.prepareStatement(sql); //Se prepara el codigo sql
+                    ps.executeUpdate(); //Se ejecuta
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                                
                 FrmPrincipal fmenu = new FrmPrincipal();
 
                 fmenu.setVisible(true);             
@@ -89,55 +71,55 @@ public class AdministradorDAO {
         return false;
     }
     
-    public boolean EditarValorUnitario(String valor, int y){
-        
-        String sql = "";
+    public void EditarValorUnitario(Administrador admin, int y){
+
+        String sql;
         
         switch (y) {
             case 1:
-                sql = "UPDATE `administrador` SET `user` = '"+ valor +"' WHERE 1";
-                break;
+                sql = "UPDATE `administrador` SET `user` = '"+ admin.getUser() +"' WHERE Activate = 'open'";
+                
+                con = cn.getConnection();
+                
+                try {
+                    ps = con.prepareStatement(sql); //Se prepara el codigo sql
+                    ps.executeUpdate(); //Se ejecuta
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                break;    
+                
             case 2:
-                sql = "UPDATE `administrador` SET `email` = '"+ valor +"' WHERE 1";
-                break; 
+                sql = "UPDATE `administrador` SET `email` = '"+ admin.getEmail() +"' WHERE Activate = 'open'";
+                
+                con = cn.getConnection();
+                
+                try {
+                    ps = con.prepareStatement(sql); //Se prepara el codigo sql
+                    ps.executeUpdate(); //Se ejecuta
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                break;
+                
             case 3:
-                sql = "UPDATE `administrador` SET `id` = '"+ valor +"' WHERE 1";
-                break;
-            default:
+                sql = "UPDATE `administrador` SET `id` = '"+ admin.getPassword() +"' WHERE Activate = 'open'";
+                
+                con = cn.getConnection();
+                
+                try {
+                    ps = con.prepareStatement(sql); //Se prepara el codigo sql
+                    ps.executeUpdate(); //Se ejecuta
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
+                } 
                 break;
         }
-        
-        try {
-            ps = con.prepareStatement(sql); //Se prepara el codigo sql
-            ps.executeUpdate(); //Se ejecuta
-        } catch (SQLException ex) {
-            Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public boolean EditarUsuario(String user, String email, String password) throws SQLException{
-        
-        String sql = "UPDATE administrador SET user = '"+ user + "', email = '"+ email +"'"
-                + ", id = '"+ password +"' WHERE id = '"+ password +"'";
-        
-        con = cn.getConnection();
+    }    
 
-        try {
-            ps = con.prepareStatement(sql); //Se prepara el codigo sql
-            ps.executeUpdate(); //Se ejecuta
-        } catch (SQLException ex) {
-            Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return true;
-    }
-    
     public boolean EditarContraseña(String password) throws SQLException{
         
-        String sql = "UPDATE administrador SET id = '"+ password +"' WHERE 1";
+        String sql = "UPDATE `administrador` SET `id` = '"+ password +"' WHERE `Activate` = 'open'";
         
         con = cn.getConnection();
 
@@ -154,7 +136,7 @@ public class AdministradorDAO {
     public boolean CrearCuenta(String User, String Password, String Email) {
         
     //AgregarCuenta();
-        String sql = "INSERT INTO administrador VALUES ('" + User + "', '" + Password + "', '"+ Email +"')";
+        String sql = "INSERT INTO administrador VALUES ('" + User + "', '" + Password + "', '"+ Email +"', 'open')";
 
     //Conectarse a la base de datos
         con = cn.getConnection();
@@ -167,7 +149,7 @@ public class AdministradorDAO {
             Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex);
             return false;
-        }           
+        }  
 
         return true;    
     }
@@ -191,5 +173,20 @@ public class AdministradorDAO {
             admin.setPassword(rs.getString("id"));
             admin.setEmail(rs.getString("email"));
         }
+    }
+    
+    public void cerrarCuenta(){
+        String sql = "UPDATE `administrador` SET `Activate`= '' WHERE `Activate`= 'open'";
+        
+        con = cn.getConnection();
+
+        try {
+            ps = con.prepareStatement(sql); //Envia la instruccion en comando sql
+            ps.executeUpdate(); //Ejecuta la instruccion
+        } catch (SQLException ex) {
+            //Muestra el error en caso de haberlo
+            Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
+        } 
     }
 }
