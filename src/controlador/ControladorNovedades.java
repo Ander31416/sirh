@@ -62,10 +62,6 @@ public class ControladorNovedades implements ActionListener {
         if(e.getSource() == frmnovedades.jBtGuardar){
                    
             String TipoNov = frmnovedades.jCbTipoNovedad.getSelectedItem().toString();
-            int Cod = 0;
-            if(!frmnovedades.jTFCodigo.getText().equals("")){
-                Cod = parseInt(frmnovedades.jTFCodigo.getText());
-            }
             String tipoDoc = frmnovedades.jCbIdentificacion.getSelectedItem().toString();
             int nroDoc = 0;
             if(!frmnovedades.jTFCedula.getText().equals("")){
@@ -73,7 +69,7 @@ public class ControladorNovedades implements ActionListener {
             }
             String descripción = frmnovedades.jTADescription.getText();
             
-            //Capturar fecha
+            //Capturar fecha  
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String fecha = format.format(frmnovedades.jDCFechaNov.getDate());
             java.util.Date fechaN = null;                       
@@ -82,20 +78,26 @@ public class ControladorNovedades implements ActionListener {
             } catch (ParseException ex) {
                 Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
             }
-            java.sql.Date fechasql = new java.sql.Date(fechaN.getTime());
+            java.sql.Date fechasql = new java.sql.Date(fechaN.getTime());           
 
-            if(TipoNov.equals("[Seleccionar]") || tipoDoc.equals("[Seleccionar]") || 
-               nroDoc == 0 || descripción.equals(null) || Cod == 0){
-                JOptionPane.showMessageDialog(frmnovedades, "Todos los campos deben ser insertados");
+            if(!frmnovedades.jTFCodigo.getText().equals("")){
+                JOptionPane.showMessageDialog(frmnovedades, "En caso de querer guardar una novedad el campo 'código'"
+                        + "\nno debe ser rellenado");
+            }else if(TipoNov.equals("[Seleccionar]") || tipoDoc.equals("[Seleccionar]") || 
+               nroDoc == 0 || descripción.equals("")){
+                JOptionPane.showMessageDialog(frmnovedades, "Todos los campos (menos el código de la novedad)"
+                        + "\ndeben ser insertados");
             }else{               
-                novedades = new Novedades(Cod, tipoDoc, TipoNov, descripción, fechasql, nroDoc);                                               
+                novedades = new Novedades(tipoDoc, TipoNov, descripción, fechasql, nroDoc);                                               
                 
                 try {
+                    int x = novedadesdao.ObtenerID().getIdNovedades();
                     novedadesdao.GuardarNovedad(novedades);
-                } catch (SQLException ex) {
-                    Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
-                }                
-                JOptionPane.showMessageDialog(frmnovedades, "Novedad guardada con exito");
+                                        
+                    JOptionPane.showMessageDialog(frmnovedades, "Novedad guardada con exito\n\nCódigo: "+ x);
+                } catch (SQLException ex) {                    
+                    Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);                    
+                }  
                 //novedadesdao.EliminarFecha();
                 LimpiarControles();
             }
@@ -115,16 +117,15 @@ public class ControladorNovedades implements ActionListener {
                     }                    
                 } catch (SQLException ex) {
                     Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);                   
-                //} catch (IOException ex) {
-                //    Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
+
                 }
             }else{
                 JOptionPane.showMessageDialog(frmnovedades, "Ingrese el codigo de la novedad");
             }
         }
         
-        if(e.getSource() == frmnovedades.jBtEditar){            
-            
+        if(e.getSource() == frmnovedades.jBtEditar){ 
+      
             if(frmnovedades.jTFCodigo.getText().equals("")){
                 JOptionPane.showMessageDialog(frmnovedades, "No se ha digitado el código de la novedad que se "
                         + "desea editar");
@@ -132,6 +133,8 @@ public class ControladorNovedades implements ActionListener {
                 int Cod = parseInt(frmnovedades.jTFCodigo.getText());
                 JOptionPane.showMessageDialog(frmnovedades, "No se ha editado ningun dato en la novedad "
                         + Cod);
+            }else if(!frmnovedades.jTFCedula.getText().equals("") || !frmnovedades.jCbIdentificacion.getSelectedItem().toString().equals("[Seleccionar]")){
+                        JOptionPane.showMessageDialog(frmnovedades, "El tipo y número de documento no deben ser editados");
             }else{
                 int x = JOptionPane.showConfirmDialog(frmnovedades, "¿Estas seguro de querer editar estos campos?", "Select an Option...",
 			JOptionPane.YES_NO_OPTION); 
@@ -142,67 +145,78 @@ public class ControladorNovedades implements ActionListener {
                     if(!frmnovedades.jTFCodigo.getText().equals("")){
                         Cod = parseInt(frmnovedades.jTFCodigo.getText());
                     }
-                    String tipoDoc = frmnovedades.jCbIdentificacion.getSelectedItem().toString();
-                    int nroDoc = 0;
-                    if(!frmnovedades.jTFCedula.getText().equals("")){
-                        nroDoc = parseInt(frmnovedades.jTFCedula.getText());
-                    }
                     String descripción = frmnovedades.jTADescription.getText();
+                    int y = 0;
                     
                     //Capturar fecha
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                     
-                    String fecha = format.format(frmnovedades.jDCFechaNov.getDate());
+                    String fecha = format.format(frmnovedades.jDCFechaNov.getDate()); 
                     java.util.Date fechaN = null;                       
                     try {
                         fechaN = format.parse(fecha);
+                        y++;
                     } catch (ParseException ex) {
                         Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     java.sql.Date fechasql = new java.sql.Date(fechaN.getTime());
-                    
-                    novedades = new Novedades(Cod, tipoDoc, TipoNov, descripción, fechasql, nroDoc);
+                                       
+                    //novedades = new Novedades(Cod, tipoDoc, TipoNov, descripción, fechasql, nroDoc);
                     try { 
                         //int idNovedades = parseInt(frmnovedades.jTFCodigo.getText());
                         //novedadesdao.EditarNovedad(idNovedades);
-                        if(novedadesdao.EditarNovedad(novedades)){
-                            novedadesdao.EditarNovedad(novedades);
-                            JOptionPane.showMessageDialog(frmnovedades, "La novedad se ha editado de"
-                                  + " forma correcta");  
-                        } 
+                            novedadesdao.EditarNovedad(Cod, TipoNov, descripción);
+                            if(y == 1){
+                                novedadesdao.EditarFecha(fechasql, Cod);
+                            }                             
+                        /*    
+                            novedadesdao.ContarArchivos();
+                                    
                         if(novedadesdao.ContarArchivos() != 0){
                             try {
                                 novedadesdao.ConsultarArchivo(nroDoc);
                             } catch (IOException ex) {
                                 Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        }
+                        }*/
+                        
+                        JOptionPane.showMessageDialog(frmnovedades, "La novedad se ha editado de"
+                                  + " forma correcta");
+                        
                     } catch (SQLException ex) {
                         Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    
                 }
             }           
         }
         
         if(e.getSource() == frmnovedades.jBtEliminar){
             
-            if(frmnovedades.jTFCodigo.getText().equals("")){
-                JOptionPane.showMessageDialog(frmnovedades, "No se ha digitado el codigo de la novedad a eliminar");
-            }else{
-                int x = JOptionPane.showConfirmDialog(frmnovedades, "¿Estas seguro de querer eliminar esta novedad?", "Select an Option...",
-				JOptionPane.YES_NO_OPTION);
-                if(x == 0){                   
-                    int cod = parseInt(frmnovedades.jTFCodigo.getText());
-                    
-                    try {
-                        novedadesdao.EliminarNovedad(cod);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    JOptionPane.showMessageDialog(frmnovedades, "La novedad "+frmnovedades.jTFCodigo.getText()
-                            + " ha sido eliminada");
+            if(!frmnovedades.jTFCodigo.getText().equals("")){ 
+                int Cod = Integer.parseInt(frmnovedades.jTFCodigo.getText());
+                try {
+                    if(VerificarCodigo(novedadesdao.ConsultarNovedad(Cod))){
+                        int x = JOptionPane.showConfirmDialog(frmnovedades, "¿Estas seguro de querer eliminar esta novedad?", "Select an Option...",
+                                JOptionPane.YES_NO_OPTION);
+                        if(x == 0){
+                            novedadesdao.EliminarNovedad(Cod);
+                            
+                            JOptionPane.showMessageDialog(frmnovedades, "Novedad eliminada con exito");
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(frmnovedades, "Este código de novedad"
+                               + " no se encuentra registrado");
+                    }                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);                   
+
                 }
+            }else{
+                JOptionPane.showMessageDialog(frmnovedades, "Ingrese el codigo de la novedad");
             }
+            //int x = JOptionPane.showConfirmDialog(frmnovedades, "¿Estas seguro de querer eliminar esta novedad?", "Select an Option...",
+                                   // JOptionPane.YES_NO_OPTION);
         }
         
         if(e.getSource() == frmnovedades.jBtAñadirArchivos){           
@@ -225,7 +239,7 @@ public class ControladorNovedades implements ActionListener {
                     PreparedStatement ps ; //Objeto donde se carga el resultado de la consulta
                     ResultSet rs; //Objeto que guarda el resultado de la consulta
                     
-                    String sql = "INSERT INTO `novedades`(`ArchivoNovedad`, `Id_Novedades`) VALUES (?,'@')";
+                    String sql = "INSERT INTO `novedades`(`ArchivoNovedad`) VALUES (?)";
                             
                     con = cn.getConnection();
 
@@ -233,7 +247,7 @@ public class ControladorNovedades implements ActionListener {
                         ps = con.prepareStatement(sql); //Se prepara el codigo sql
                         ps.setBlob(1, flujo, longitud);
                         
-                        ps.executeUpdate(); //Se ejecuta                     
+                        ps.executeUpdate(); //Se ejecuta                          
                     } catch (SQLException ex) {
                         Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -252,6 +266,7 @@ public class ControladorNovedades implements ActionListener {
         frmnovedades.jCbIdentificacion.setSelectedItem("[Seleccionar]");      
         frmnovedades.jTFCodigo.setText(null);
         frmnovedades.jTADescription.setText(null);
+        frmnovedades.jDCFechaNov.setDate(null);
                 
         return true;
     }
@@ -286,6 +301,7 @@ public class ControladorNovedades implements ActionListener {
         frmnovedades.jCbIdentificacion.setSelectedItem(novedad.getTipoid());      
         frmnovedades.jTFCodigo.setText(valueOf(novedad.getIdNovedades()));
         frmnovedades.jTADescription.setText(novedad.getDescripcion());
+        frmnovedades.jDCFechaNov.setDate(novedad.getFechaNovedad());
     }
     
     public boolean VerificarCodigo(Novedades novedad) throws SQLException{
