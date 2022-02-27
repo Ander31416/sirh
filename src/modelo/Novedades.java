@@ -23,8 +23,7 @@ public class Novedades {
     public Novedades() {
     }
 
-    public Novedades(int idNovedades, String tipoid, String tipoNovedad, String descripcion, java.sql.Date fechaNovedad, int idEmpleado) {
-        this.idNovedades = idNovedades;
+    public Novedades(String tipoid, String tipoNovedad, String descripcion, java.sql.Date fechaNovedad, int idEmpleado) {
         this.tipoid = tipoid;
         this.tipoNovedad = tipoNovedad;
         this.descripcion = descripcion;
