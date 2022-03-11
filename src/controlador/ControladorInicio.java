@@ -29,7 +29,6 @@ public class ControladorInicio implements ActionListener {
     FrmInicio frminicio;
     Administrador admin;
     AdministradorDAO admindao;
-    //Fabricante fabric;
 
     public ControladorInicio(FrmInicio frminicio, Administrador admin, AdministradorDAO admindao) {
         this.frminicio = frminicio;
@@ -73,66 +72,5 @@ public class ControladorInicio implements ActionListener {
             }
         }
     }
-
-    
-    /*
-    public void SendEmail(){
-        Properties propiedad = new Properties();
-        propiedad.setProperty("mail smtp host", "smtp gmail com");
-        propiedad.setProperty("mail.smtp.starttla.enable", "true");
-        propiedad.setProperty("mail smtp port", "587");
-        propiedad.setProperty("mail.smtp.auth", "true");
-        Session sesion = Session.getDefaultInstance(propiedad);
-        Random claseRandom = new Random();
-        int code = 1000 + claseRandom.nextInt(10000 - 1000);
-            
-            
-        String Email = admin.getEmail();
-        String Emailfabricante = fabric.getEmailfabricante();
-        String Passwordfabricante = fabric.getPasswordfabricante();
-        String asunto = "envio de código de verificación";
-        String mensaje = "Código de verificación:\n\n" + code;
-        MimeMessage mail = new MimeMessage(sesion);
-            
-        try {
-            mail.setFrom(new InternetAddress (Emailfabricante));
-            mail.addRecipient(Message.RecipientType.TO, new InternetAddress (Email));
-            mail.setSubject(asunto);
-            mail.setText(mensaje);
-                
-            Transport transporte = sesion.getTransport("smtp");
-            transporte.connect(Emailfabricante, Passwordfabricante);
-            transporte.sendMessage(mail, mail.getRecipients(Message.RecipientType.TO));
-            transporte.close();
-                
-        } catch (MessagingException ex) {
-            Logger.getLogger(AdministradorDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String encryptionEmail = "", x = "";
-        for(int i = 0; i<Email.length(); i++){
-            if(i>1 && !(encryptionEmail.charAt(i) == '@' && x.equals(""))){
-                encryptionEmail += "*";
-            }else{
-                if(i<=1){
-                    encryptionEmail += Email.charAt(i);
-                }else{
-                    encryptionEmail += Email.charAt(i);
-                    x = " ";
-                }
-            }
-        }
-        int a = 0;
-        do{
-            String Inputcode = JOptionPane.showInputDialog(null, "Se ha enviado un código de verificación a "
-                + encryptionEmail + "\n\nDigite el código:");
-                
-            if(Inputcode.equals(valueOf(code))){
-                admindao.cambiarPassword();
-                a++;
-            }else{
-                JOptionPane.showMessageDialog(null, "ERROR. Codigo ingresado sin exito");
-            }
-        }while(a == 0);        
-    }*/
 }
 
