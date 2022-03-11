@@ -4,6 +4,8 @@
  */
 package modelo;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import modelo.Novedades;
 import static java.lang.Integer.parseInt;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.String.valueOf;
+import java.sql.Blob;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import vista.FrmNovedades;
@@ -42,15 +45,13 @@ public class NovedadesDAO {
     public boolean GuardarNovedad(Novedades novedad) throws SQLException{
         String sql = "UPDATE `novedades` SET `Descripcion`='"+novedad.getDescripcion()+"',"
                 + "`Fecha_Novedad`='"+novedad.getFechaNovedad()+"',`Id_Empleado`='"+novedad.getIdEmpleado()+"',`tipoNovedad`='"+novedad.getTipoNovedad()+"',"
-                + "`tipoDocumento`='"+novedad.getTipoid()+"' WHERE `Descripcion` is null";
+                + "`tipoDocumento`='"+novedad.getTipoid()+"' WHERE `Id_Novedades` = '"+ ObtenerID().getIdNovedades() +"'";
        
         //Conectarse a la base de datos
         con = cn.getConnection();
 
         try {
-            ps = con.prepareStatement(sql); //Envia la instruccion en comando sql
-            //ps.setBlob(1, flujo, longitud);
-            
+            ps = con.prepareStatement(sql); //Envia la instruccion en comando sql          
             ps.executeUpdate(); //Ejecuta la instruccion
         } catch (SQLException ex) {
             //Muestra el error en caso de haberlo
@@ -273,32 +274,34 @@ public class NovedadesDAO {
         return x;
     }    
     
-    public void ConsultarArchivo(int Id_Novedades) throws SQLException, IOException{
-        JFileChooser fs = new JFileChooser();
-        fs.setDialogTitle("save a file");
-        int result = fs.showSaveDialog(null);
-        
-        String sql = "SELECT `ArchivoNovedad` FROM `novedades` WHERE `Id_Novedades` = '"+Id_Novedades+"';";
+    public void DescargarArchivo(int Id_Novedades) throws SQLException, IOException{
+
+        String sql = "SELECT * FROM `novedades` WHERE `Id_Novedades` = '"+Id_Novedades+"';";
         
         ps = con.prepareStatement(sql);
-        ps.executeUpdate();
+        ps.executeQuery();
         if (rs.next()) {
-            fs.setCurrentDirectory(new File("/home/me/Documents"));
-            int tampak = fs.showSaveDialog(null);
-            if (tampak == JFileChooser.APPROVE_OPTION){
-                File file = fs.getSelectedFile();
-                try (InputStream stream = rs.getBinaryStream("image");
-                     OutputStream output = new FileOutputStream(file)) {
-
-                    byte[] buffer = new byte[4096];
-                    while (stream.read(buffer) > 0) {
-                            output.write(buffer);
-                    }
-                }
+            Blob doc = rs.getBlob("`ArchivoNovedad`"); 
+            InputStream ls = doc.getBinaryStream();
+            
+            File file = new File("Documento_incapacidad_"+Id_Novedades);
+            BufferedInputStream in = new BufferedInputStream(ls);
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+            
+            byte[] bytes = new byte[8000];
+            
+            int len = 0;
+            
+            while((len = in.read(bytes)) > 0){
+                  out.write(bytes, 0, len);
             }
+            
+            out.flush();
+            out.close();
+            in.close();
         }
     }
-    
+     
     public void EliminarFecha(){
         String sql = "DELETE from `novedades` where `Id_Novedades` = ''";
         
