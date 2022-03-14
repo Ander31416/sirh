@@ -154,6 +154,12 @@ ALTER TABLE `turnos`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `novedades`
+--
+ALTER TABLE `novedades`
+  MODIFY `Id_Novedades` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `salario`
 --
 ALTER TABLE `salario`
