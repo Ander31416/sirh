@@ -56,7 +56,7 @@ public class ControladorCrearCuenta implements ActionListener{
                 JOptionPane.showMessageDialog(frmCrearCuenta,"Los campos 'contraseña' y 'repetir "
                     + "contraseña' deben ser digitados de manera identica.");
             }else{
-                admindao.CrearCuenta(User, Password, Email);
+                admindao.CrearCuenta(Password, User,  Email);
                 JOptionPane.showMessageDialog(frmCrearCuenta, "Cuenta creada con exito");
 
                 FrmPrincipal abrir = new FrmPrincipal();
