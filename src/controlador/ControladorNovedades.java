@@ -312,6 +312,7 @@ public class ControladorNovedades implements ActionListener {
         frmnovedades.jTFCodigo.setText(valueOf(novedad.getIdNovedades()));
         frmnovedades.jTADescription.setText(novedad.getDescripcion());
         frmnovedades.jDCFechaNovInic.setDate(novedad.getFechaNovedadInicio());
+	frmnovedades.jDCFechaNovFin.setDate(novedad.getFechaNovedadFin());
     }
     
     public boolean VerificarCodigo(Novedades novedad) throws SQLException{
