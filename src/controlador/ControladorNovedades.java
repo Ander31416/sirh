@@ -1,4 +1,4 @@
-/*
+/*/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -72,7 +72,8 @@ public class ControladorNovedades implements ActionListener {
             }
             String descripción = frmnovedades.jTADescription.getText();
             
-            java.sql.Date fechasql = AdquirirFecha();
+            java.sql.Date fechaInicsql = AdquirirFecha(frmnovedades.jDCFechaNovInic.getDate());
+            java.sql.Date fechaFinsql = AdquirirFecha(frmnovedades.jDCFechaNovFin.getDate());
 
             if(!frmnovedades.jTFCodigo.getText().equals("")){
                 JOptionPane.showMessageDialog(frmnovedades, "En caso de querer guardar una novedad el campo 'código'"
@@ -81,7 +82,7 @@ public class ControladorNovedades implements ActionListener {
                 JOptionPane.showMessageDialog(frmnovedades, "Todos los campos (menos el código de la novedad)"
                         + "\ndeben ser insertados");
             }else{               
-                novedades = new Novedades(tipoDoc, TipoNov, descripción, fechasql, nroDoc);                                               
+                novedades = new Novedades(tipoDoc, TipoNov, descripción, fechaInicsql, fechaFinsql, nroDoc);                                               
                 
                 try {
                     int x = novedadesdao.ObtenerID().getIdNovedades();
@@ -141,15 +142,49 @@ public class ControladorNovedades implements ActionListener {
                         Cod = parseInt(frmnovedades.jTFCodigo.getText());
                     }
                     String descripción = frmnovedades.jTADescription.getText();
-                    int y = 0;
-                    AdquirirFecha();
+                    int y = 0, z = 0, a = 0; //Variables que se 'inicializaran' si se edita su respectivo valor
+                    AdquirirFecha(frmnovedades.jDCFechaNovInic.getDate());
+                    
+                    //Identificar si el usuario va a editar la fecha inicial
+                    if(frmnovedades.jDCFechaNovInic.getDate() != null){
+                        y++; 
+                    }
+                    
+                    //Identificar si el usuario va a editar la fecha final
+                    if(frmnovedades.jDCFechaNovFin.getDate() != null){
+                        a++; 
+                    }
+                    
+                    //Identificar si el usuario va a editar el documento
+                    if(frmnovedades.jLabel12.getText() != null){
+                        z++; 
+                    }
 
                     try {
-                            novedadesdao.EditarNovedad(Cod, TipoNov, descripción);
-                            if(y == 1){
-                                novedadesdao.EditarFecha(AdquirirFecha(), Cod);
-                            }
+                        novedadesdao.EditarNovedad(Cod, TipoNov, descripción);
                         
+                        //Condicional - ¿Se editará la fecha inicial?
+                        if(y == 1){
+                            try{
+                                novedadesdao.EditarFechaInicio(AdquirirFecha(frmnovedades.jDCFechaNovInic.getDate()), Cod);
+                            }catch(Exception f){
+                                JOptionPane.showMessageDialog(frmnovedades, "La fecha inicial se ha escrito de"
+                                  + " forma incorrecta");
+                            }
+                        }
+                        //Condicional - ¿Se editará la fecha Final?
+                        if(a == 1){
+                            try{
+                                novedadesdao.EditarFechaFin(AdquirirFecha(frmnovedades.jDCFechaNovFin.getDate()), Cod);
+                            }catch(Exception f){
+                                JOptionPane.showMessageDialog(frmnovedades, "La fecha se ha escrito de"
+                                  + " forma incorrecta");
+                            }
+                        }
+                        //Condicional - ¿Se editará el documento?
+                        if(z == 1){
+                            novedadesdao.EditarArchivo(Cod);
+                        }
                         JOptionPane.showMessageDialog(frmnovedades, "La novedad se ha editado de"
                                   + " forma correcta");
                         
@@ -194,7 +229,7 @@ public class ControladorNovedades implements ActionListener {
             
             int option = file.showOpenDialog(frmnovedades);
             if(option == JFileChooser.APPROVE_OPTION){  
-                frmnovedades.jLabel1.setText(file.getSelectedFile().toString());
+                frmnovedades.jLabel12.setText(file.getSelectedFile().toString());
                 
                 Archivo = file.getSelectedFile();
                 longitud = Archivo.length();
@@ -217,8 +252,8 @@ public class ControladorNovedades implements ActionListener {
                         ps.setBlob(1, flujo, longitud);
                         
                         ps.executeUpdate(); //Se ejecuta                          
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ControladorNovedades.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception m) {
+                        JOptionPane.showMessageDialog(frmnovedades, "Error. El archivo es demasiado grande");
                     }
                                        
                 } catch (FileNotFoundException ex) {
@@ -235,8 +270,9 @@ public class ControladorNovedades implements ActionListener {
         frmnovedades.jCbIdentificacion.setSelectedItem("[Seleccionar]");      
         frmnovedades.jTFCodigo.setText(null);
         frmnovedades.jTADescription.setText(null);
-        frmnovedades.jDCFechaNov.setDate(null);
-        frmnovedades.jLabel1.setText(null);
+        frmnovedades.jDCFechaNovInic.setDate(null);
+        frmnovedades.jDCFechaNovFin.setDate(null);
+        frmnovedades.jLabel12.setText(null);
                 
         return true;
     }
@@ -247,7 +283,7 @@ public class ControladorNovedades implements ActionListener {
            frmnovedades.jCbIdentificacion.getSelectedItem().equals("[Seleccionar]") || 
            frmnovedades.jTFCedula.getText().equals("") ||
            frmnovedades.jTADescription.getText().equals("") ||
-           frmnovedades.jLabel1.getText().equals("")
+           frmnovedades.jLabel12.getText().equals("")
            ){
             return false;
         }
@@ -259,7 +295,10 @@ public class ControladorNovedades implements ActionListener {
            frmnovedades.jCbTipoNovedad.getSelectedItem().equals("[Seleccionar]") &&
            frmnovedades.jCbIdentificacion.getSelectedItem().equals("[Seleccionar]") && 
            frmnovedades.jTFCedula.getText().equals("") &&
-           frmnovedades.jTADescription.getText().equals("")      
+           frmnovedades.jTADescription.getText().equals("") &&   
+           frmnovedades.jLabel12.getText().equals("") &&
+           frmnovedades.jDCFechaNovInic.getDate() == null &&
+           frmnovedades.jDCFechaNovFin.getDate() == null
            ){
             return true;
         }
@@ -272,21 +311,21 @@ public class ControladorNovedades implements ActionListener {
         frmnovedades.jCbIdentificacion.setSelectedItem(novedad.getTipoid());      
         frmnovedades.jTFCodigo.setText(valueOf(novedad.getIdNovedades()));
         frmnovedades.jTADescription.setText(novedad.getDescripcion());
-        frmnovedades.jDCFechaNov.setDate(novedad.getFechaNovedad());
+        frmnovedades.jDCFechaNovInic.setDate(novedad.getFechaNovedadInicio());
     }
     
     public boolean VerificarCodigo(Novedades novedad) throws SQLException{
         return novedad.getIdNovedades() != 0;       
     }
     
-    public java.sql.Date AdquirirFecha() {
+    public java.sql.Date AdquirirFecha(java.util.Date Fecha) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         java.sql.Date fechasql;
         String fecha = "";
         int x = 0;
         
         try{
-            fecha = format.format(frmnovedades.jDCFechaNov.getDate());
+            fecha = format.format(Fecha);
         }catch(Exception e){
            x++; 
         }
@@ -302,7 +341,7 @@ public class ControladorNovedades implements ActionListener {
             fechasql = new java.sql.Date(fechaN.getTime());
         }else{           
             //Capturar fecha  
-            fecha = format.format(frmnovedades.jDCFechaNov.getDate());
+            fecha = format.format(Fecha);
             java.util.Date fechaN = null;
             try {
                 fechaN = format.parse(fecha);
