@@ -17,17 +17,19 @@ public class Novedades {
     private String tipoid;
     private String tipoNovedad;
     private String descripcion;
-    private Date fechaNovedad;
+    private Date fechaNovedadInicio;
+    private Date fechaNovedadFin;
     private int idEmpleado;
 
     public Novedades() {
     }
 
-    public Novedades(String tipoid, String tipoNovedad, String descripcion, java.sql.Date fechaNovedad, int idEmpleado) {
+    public Novedades(String tipoid, String tipoNovedad, String descripcion, java.sql.Date fechaNovedadInicio, java.sql.Date fechaNovedadFin, int idEmpleado) {
         this.tipoid = tipoid;
         this.tipoNovedad = tipoNovedad;
         this.descripcion = descripcion;
-        this.fechaNovedad = fechaNovedad;
+        this.fechaNovedadInicio = fechaNovedadInicio;
+        this.fechaNovedadFin = fechaNovedadFin;
         this.idEmpleado = idEmpleado;
     }
 
@@ -63,12 +65,20 @@ public class Novedades {
         this.descripcion = descripcion;
     }
 
-    public java.util.Date getFechaNovedad() {
-        return fechaNovedad;
+    public Date getFechaNovedadInicio() {
+        return fechaNovedadInicio;
     }
 
-    public void setFechaNovedad(java.sql.Date fechaNovedad) {
-        this.fechaNovedad = fechaNovedad;
+    public void setFechaNovedadInicio(Date fechaNovedadInicio) {
+        this.fechaNovedadInicio = fechaNovedadInicio;
+    }
+
+    public Date getFechaNovedadFin() {
+        return fechaNovedadFin;
+    }
+
+    public void setFechaNovedadFin(Date fechaNovedadFin) {
+        this.fechaNovedadFin = fechaNovedadFin;
     }
 
     public int getIdEmpleado() {
@@ -78,5 +88,4 @@ public class Novedades {
     public void setIdEmpleado(int idEmpleado) {
         this.idEmpleado = idEmpleado;
     }
-
 }
